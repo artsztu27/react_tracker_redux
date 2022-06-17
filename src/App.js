@@ -1,18 +1,24 @@
-import React, { lazy, Suspense } from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import React, { lazy, Suspense, useEffect } from 'react';
 import './App.css';
-import { connect } from 'react-redux'
-// const Header = lazy(() => import('./containers/Header'))
+import {
+  getDataAsync,
+} from './features/tracker/trackerSlice';
+import { useDispatch } from 'react-redux';
+const Header = lazy(() => import('./containers/Header'))
 const Body = lazy(() => import('./containers/Body'))
 
 const fallBack = () => <p>Loading...</p>
 
-function App(props) {
+function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getDataAsync());
+  }, [])
   return (
       <div className="App">
         <Suspense fallback={fallBack}>
           <h1 className='title'>訂貨單</h1>
+          <Header />
           <Body />
         </Suspense>
       </div>

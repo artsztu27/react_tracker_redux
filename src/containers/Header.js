@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react'
 import '../style/add-bar.css'
-const AddBar = lazy(() => import("../components/AddBar"))
+const AddBar = lazy(() => import('components/AddBar'))
 
 const fallback = () => <p>Loading...</p>
 const Header = () => {

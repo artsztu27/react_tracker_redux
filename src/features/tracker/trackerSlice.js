@@ -1,36 +1,32 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { fetchData } from 'features/tracker/trackerAPI';
 
 const initialState = {
   status: 'idle',
-  items: [{
-    id:1,
-    count:'2',
-    item:'糖果'
-  } , {
-    id:2,
-    count:'4',
-    item:'巧克力'
-  },{
-    id:3,
-    count:'2',
-    item:'糖果'
-  } , {
-    id:4,
-    count:'5',
-    item:'巧克力'
-  }]
+  items: []
 };
+export const getDataAsync = createAsyncThunk(
+  'tracker/fetchData',
+  async () => {
+    const response = await fetchData();
+    return response.data;
+  }
+);
 export const trackerSlice = createSlice({
   name: 'tracker',
   initialState,
   reducers: {
     addItem: (state, action) => {
-      console.log('action = ',action.payload)
-      action.item.id = state.items.length
+      action.payload.id = state.items.length
       state.items.push(action.payload);
     },
     removeItem: (state, action) => {
-      state.items.splice(action.payload.id, 1)
+      for (var i = 0; i < state.items.length; i++) {
+        var obj = state.items[i];
+        if (action.payload.id === obj.id) {
+          state.items.splice(i, 1);
+        }
+      }
     },
     increaseCount: (state, action) => {
       let item = state.items.find(x => (x.id === action.payload.id));
@@ -43,6 +39,16 @@ export const trackerSlice = createSlice({
       }
 
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getDataAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getDataAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.items =[...action.payload];
+      });
   },
 });
 export const selectTracker = (state) => state.tracker.items;
